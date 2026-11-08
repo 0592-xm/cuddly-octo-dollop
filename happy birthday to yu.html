@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>线条小狗双十一寻宝大冒险✨</title>
+<style>
+/* ============================================================
+   基础重置 + 高级主题色系统
+   ============================================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    color: #5c4126;
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* 高级感背景：多层柔和渐变 + 微妙斑点纹理 */
+    background:
+        radial-gradient(ellipse 80% 40% at 20% 0%, rgba(255,214,128,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 30% at 90% 100%, rgba(255,180,140,0.20) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 50% 50%, #fdf8f0 0%, #f7ecd8 100%);
+    background-attachment: fixed;
+}
+
+/* 背景漂浮的装饰性圆点（纯CSS，增加层次感） */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(255,200,120,0.15) 2px, transparent 3px),
+        radial-gradient(circle at 85% 15%, rgba(212,165,116,0.12) 1.5px, transparent 2.5px),
+        radial-gradient(circle at 30% 80%, rgba(255,180,100,0.10) 2px, transparent 3px),
+        radial-gradient(circle at 75% 70%, rgba(180,140,80,0.10) 1.5px, transparent 2.5px),
+        radial-gradient(circle at 50% 40%, rgba(255,214,160,0.08) 2.5px, transparent 3.5px);
+    background-size: 300px 300px, 250px 250px, 400px 400px, 280px 280px, 350px 350px;
+    animation: drift 40s linear infinite;
+}
+@keyframes drift {
+    0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+    100% { background-position: 300px 300px, -250px 250px, 400px -400px, -280px 280px, 350px -350px; }
+}
+
+/* ============================================================
+   线条小狗图片通用样式
+   ============================================================ */
+.dog-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* cover比contain更高级，填满不留白 */
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* ============================================================
+   页面容器
+   ============================================================ */
+.page {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 22px 16px 48px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+/* ============================================================
+   云朵卡片 —— 高级玻璃质感 + 渐变边框 + 多层阴影
+   ============================================================ */
+.cloud-card {
+    background: rgba(255, 253, 247, 0.88);
+    backdrop-filter: blur(12px) saturate(1.1);
+    -webkit-backdrop-filter: blur(12px) saturate(1.1);
+    border-radius: 28px;
+    border: 1px solid rgba(232, 213, 184, 0.7);
+    box-shadow:
+        0 12px 36px rgba(140, 100, 50, 0.08),
+        0 2px 10px rgba(140, 100, 50, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    padding: 24px 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+/* 卡片顶部精致高光线 */
+.cloud-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20%; right: 20%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,165,116,0.35), transparent);
+}
+
+/* ============================================================
+   按钮通用 —— 渐变填充 + 内发光 + 细腻阴影
+   ============================================================ */
+.btn {
+    display: inline-block;
+    padding: 13px 32px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #fff3c9 0%, #ffe49a 100%);
+    color: #7a5a30;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow:
+        0 4px 14px rgba(220, 170, 90, 0.28),
+        0 1px 2px rgba(0,0,0,0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition: transform 0.2s cubic-bezier(.2,.8,.2,1), box-shadow 0.2s;
+    font-family: inherit;
+    position: relative;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 22px rgba(220, 170, 90, 0.38),
+        0 2px 4px rgba(0,0,0,0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.btn:active { transform: translateY(0); }
+.btn-primary {
+    background: linear-gradient(135deg, #e4b27a 0%, #c48e54 100%);
+    color: #fff;
+    box-shadow:
+        0 4px 14px rgba(190, 130, 70, 0.38),
+        0 1px 2px rgba(0,0,0,0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #eabc86 0%, #cfa06a 100%);
+    box-shadow:
+        0 8px 22px rgba(190, 130, 70, 0.48),
+        0 2px 4px rgba(0,0,0,0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.btn:disabled { background: #ece0c8; color: #b9a88a; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* ============================================================
+   输入框 —— 细腻描边 + focus光环
+   ============================================================ */
+.input {
+    width: 100%;
+    padding: 13px 18px;
+    border: 1.5px solid rgba(232, 213, 184, 0.9);
+    border-radius: 14px;
+    background: rgba(255, 253, 247, 0.95);
+    font-size: 15px;
+    color: #5c4126;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.input:focus {
+    border-color: #d4a574;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(212,165,116,0.15), 0 2px 8px rgba(212,165,116,0.08);
+}
+.input::placeholder { color: #c9b99a; }
+
+/* ============================================================
+   顶部标题区 —— 渐变标题 + 浮光效果
+   ============================================================ */
+.header {
+    text-align: center;
+    padding: 32px 10px 20px;
+    position: relative;
+}
+.header h1 {
+    font-size: 23px;
+    background: linear-gradient(135deg, #8b6b3d 0%, #d4a574 50%, #b5823f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+.header .sub {
+    font-size: 13px;
+    color: #a0855c;
+    line-height: 1.8;
+    letter-spacing: 0.3px;
+}
+.paw-deco {
+    font-size: 18px;
+    letter-spacing: 8px;
+    color: #d4a574;
+    margin-top: 8px;
+    opacity: 0.7;
+}
+
+/* 顶部头像小狗 —— 精致光圈 + 悬浮动画 */
+.header > div:first-of-type img {
+    transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
+}
+.header > div:first-of-type img:hover { transform: translateY(-3px) rotate(3deg); }
+.header > div:first-of-type img:first-child {
+    box-shadow: 0 6px 18px rgba(212,165,116,0.3), 0 2px 6px rgba(0,0,0,0.05), inset 0 0 0 3px rgba(255,255,255,0.8) !important;
+}
+.header > div:first-of-type img:last-child {
+    box-shadow: 0 6px 18px rgba(212,165,116,0.3), 0 2px 6px rgba(0,0,0,0.05), inset 0 0 0 3px rgba(255,255,255,0.8) !important;
+}
+
+/* ============================================================
+   进度条 —— 渐变填充连线 + 完成的发光效果
+   ============================================================ */
+.progress-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 12px;
+    background: rgba(255, 248, 236, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(232, 213, 184, 0.8);
+    box-shadow:
+        0 8px 24px rgba(140,100,50,0.08),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+}
+.progress-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5ead4, #ecdcb8);
+    color: #b9a88a;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(.2,.8,.2,1);
+    flex-shrink: 0;
+    position: relative;
+    border: 2px solid rgba(255,255,255,0.6);
+}
+.progress-dot.done {
+    background: linear-gradient(135deg, #e4b27a 0%, #c48e54 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(196, 142, 84, 0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.progress-dot.current {
+    background: linear-gradient(135deg, #ffe8a0 0%, #ffd97a 100%);
+    color: #8b6b3d;
+    box-shadow: 0 0 0 5px rgba(255, 222, 120, 0.35), 0 4px 12px rgba(212,165,116,0.25);
+    animation: pulse 1.8s ease-in-out infinite;
+}
+.progress-dot.locked {
+    background: linear-gradient(135deg, #f0e4cb, #e5d6b3);
+    color: #c9b99a;
+    opacity: 0.7;
+}
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 5px rgba(255, 222, 120, 0.3), 0 4px 12px rgba(212,165,116,0.2); }
+    50% { box-shadow: 0 0 0 10px rgba(255, 222, 120, 0.15), 0 4px 12px rgba(212,165,116,0.3); }
+}
+.progress-line {
+    flex: 1;
+    height: 4px;
+    background: linear-gradient(90deg, #ecdcb8, #f5ead4);
+    margin: 0 3px;
+    border-radius: 2px;
+    min-width: 8px;
+    position: relative;
+    overflow: hidden;
+}
+.progress-line.done {
+    background: linear-gradient(90deg, #e4b27a 0%, #c48e54 100%);
+    box-shadow: 0 0 6px rgba(196,142,84,0.3);
+}
+
+/* ============================================================
+   关卡卡片 —— 进入动画优化
+   ============================================================ */
+.level-card { display: none; }
+.level-card.active {
+    display: block;
+    animation: slideInUp 0.5s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.level-title {
+    font-size: 18px;
+    background: linear-gradient(135deg, #8b6b3d, #b5823f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 18px;
+    font-weight: 800;
+}
+.level-num {
+    display: inline-block;
+    background: linear-gradient(135deg, #fff3c9, #ffe49a);
+    color: #7a5a30;
+    border-radius: 999px;
+    padding: 3px 14px;
+    font-size: 12px;
+    margin-right: 8px;
+    -webkit-text-fill-color: #7a5a30;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+    font-weight: 700;
+}
+
+/* ============================================================
+   关卡1：填空
+   ============================================================ */
+.fill-blank p {
+    font-size: 15px;
+    line-height: 2.3;
+    text-align: center;
+    color: #5c4126;
+    letter-spacing: 0.5px;
+}
+.fill-blank .input {
+    width: 86px;
+    display: inline-block;
+    margin: 0 5px;
+    padding: 7px 8px;
+    text-align: center;
+    font-size: 15px;
+}
+
+/* ============================================================
+   关卡2：看图寻宝 —— 暖金渐变 + 漂浮装饰
+   ============================================================ */
+.hunt-area {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border-radius: 22px;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.4) 0%, transparent 50%),
+        linear-gradient(135deg, #fff5dc 0%, #ffe8c0 55%, #ffd9a0 100%);
+    overflow: hidden;
+    border: 1.5px solid rgba(232, 200, 154, 0.7);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.8),
+        inset 0 -2px 6px rgba(212,165,116,0.1);
+}
+.hunt-dog {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    cursor: pointer;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.92);
+    border: 2px solid rgba(255,255,255,0.9);
+    transition: transform 0.2s cubic-bezier(.2,.8,.2,1), box-shadow 0.2s, filter 0.2s;
+    user-select: none;
+    box-shadow: 0 4px 12px rgba(180,140,80,0.25), 0 2px 4px rgba(0,0,0,0.05);
+}
+.hunt-dog:hover { transform: scale(1.08); box-shadow: 0 8px 18px rgba(180,140,80,0.35); }
+.hunt-dog:active { transform: scale(0.95); }
+.hunt-dog.found {
+    opacity: 0.5;
+    pointer-events: none;
+    filter: grayscale(0.6);
+}
+.hunt-progress {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 14px;
+    color: #8b6b3d;
+    font-weight: 600;
+}
+
+/* ============================================================
+   关卡3：选择题 —— 悬浮抬升 + 精致选项条
+   ============================================================ */
+.choice-item {
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fffcf3 0%, #fff9ec 100%);
+    border: 1.5px solid rgba(232, 213, 184, 0.9);
+    border-radius: 18px;
+    font-size: 15px;
+    color: #5c4126;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: all 0.25s cubic-bezier(.2,.8,.2,1);
+    position: relative;
+    overflow: hidden;
+}
+.choice-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #e4b27a, #c48e54);
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+.choice-item:hover {
+    border-color: #d4a574;
+    background: linear-gradient(135deg, #fff5dc 0%, #ffe8c0 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(212,165,116,0.18);
+}
+.choice-item:hover::before { opacity: 1; }
+.choice-item:active { transform: translateY(0); }
+.choice-item.correct {
+    border-color: #9ac97a;
+    background: linear-gradient(135deg, #edf8df, #e2f2ce);
+    color: #4a7a2f;
+    box-shadow: 0 4px 14px rgba(154, 201, 122, 0.3);
+}
+.choice-item.correct::before { opacity: 1; background: linear-gradient(180deg, #9ac97a, #7aac5a); }
+.choice-item.wrong {
+    border-color: #e89a9a;
+    background: linear-gradient(135deg, #fde8e8, #fbd4d4);
+    color: #b35050;
+    animation: shake 0.4s cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 4px 14px rgba(232,154,154,0.3);
+}
+.choice-item.wrong::before { opacity: 1; background: linear-gradient(180deg, #e89a9a, #cc7575); }
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+}
+
+/* ============================================================
+   关卡4：抓小狗 —— 高级草地渐变
+   ============================================================ */
+.catch-area {
+    position: relative;
+    width: 100%;
+    height: 340px;
+    border-radius: 22px;
+    background:
+        radial-gradient(ellipse at 20% 80%, rgba(200,230,180,0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(230,250,210,0.5) 0%, transparent 50%),
+        linear-gradient(180deg, #eaf7dc 0%, #d8eec2 100%);
+    border: 1.5px solid rgba(181, 212, 154, 0.7);
+    overflow: hidden;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.7),
+        inset 0 -2px 6px rgba(140,180,100,0.1);
+}
+.catch-dog {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    cursor: pointer;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 3px solid rgba(255,255,255,0.95);
+    background: #fff;
+    transition: left 0.4s cubic-bezier(.2,.8,.2,1), top 0.4s cubic-bezier(.2,.8,.2,1);
+    user-select: none;
+    box-shadow:
+        0 6px 16px rgba(180,140,80,0.25),
+        0 2px 4px rgba(0,0,0,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.9);
+    animation: wiggle 0.7s ease-in-out infinite;
+}
+.catch-dog .dog-img { transform: rotate(90deg); }
+@keyframes wiggle {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+.catch-info {
+    text-align: center;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: #8b6b3d;
+}
+.catch-info .num { font-weight: 700; font-size: 20px; color: #c48e54; }
+
+/* ============================================================
+   关卡5：口令
+   ============================================================ */
+.password-box .hint {
+    font-size: 14px;
+    color: #a0855c;
+    text-align: center;
+    margin-bottom: 16px;
+    line-height: 1.9;
+}
+.password-box .input-row { margin-bottom: 12px; }
+
+/* ============================================================
+   关卡6：终极宝箱 —— 开启动画升级
+   ============================================================ */
+.treasure-box { text-align: center; padding: 44px 20px; }
+.chest {
+    width: 130px;
+    height: 130px;
+    cursor: pointer;
+    transition: transform 0.25s cubic-bezier(.2,.8,.2,1);
+    user-select: none;
+    margin: 24px auto;
+    display: block;
+    border-radius: 26px;
+    overflow: hidden;
+    border: 3px solid rgba(232, 200, 154, 0.8);
+    background: linear-gradient(135deg, #fff9ec 0%, #fff0c4 100%);
+    box-shadow:
+        0 10px 30px rgba(212,165,116,0.3),
+        0 2px 6px rgba(0,0,0,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+    animation: chestFloat 3s ease-in-out infinite;
+    position: relative;
+}
+.chest::after {
+    content: '✨';
+    position: absolute;
+    top: -8px; right: -4px;
+    font-size: 22px;
+    animation: sparkle 1.5s ease-in-out infinite;
+}
+.chest:hover { transform: scale(1.06); box-shadow: 0 14px 36px rgba(212,165,116,0.4); }
+@keyframes chestFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+@keyframes sparkle {
+    0%, 100% { opacity: 0.4; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+.chest.opening {
+    animation: chestOpen 0.7s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes chestOpen {
+    0% { transform: scale(1) rotate(0); }
+    30% { transform: scale(1.2) rotate(-6deg); }
+    60% { transform: scale(1.25) rotate(6deg); }
+    100% { transform: scale(1.4) rotate(0); }
+}
+.treasure-reveal { display: none; animation: fadeInBounce 0.7s cubic-bezier(.2,.8,.2,1); }
+.treasure-reveal.show { display: block; }
+@keyframes fadeInBounce {
+    0% { opacity: 0; transform: scale(0.5) translateY(20px); }
+    60% { transform: scale(1.06) translateY(-4px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.treasure-list {
+    background: linear-gradient(135deg, #fffcf3 0%, #fff9ec 100%);
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-top: 16px;
+    text-align: left;
+    border: 1px solid rgba(232, 213, 184, 0.8);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+.treasure-list .item {
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(232, 213, 184, 0.8);
+    font-size: 14px;
+    color: #5c4126;
+    letter-spacing: 0.3px;
+}
+.treasure-list .item:last-child { border-bottom: none; }
+
+/* ============================================================
+   礼物收藏墙 —— hover抬升 + 解锁发光
+   ============================================================ */
+.gift-wall { padding: 20px 12px; }
+.gift-wall h2 {
+    font-size: 16px;
+    text-align: center;
+    background: linear-gradient(135deg, #8b6b3d, #c48e54);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    font-weight: 800;
+}
+.gift-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.gift-card {
+    background: rgba(255, 251, 240, 0.7);
+    border-radius: 16px;
+    padding: 14px 6px 12px;
+    text-align: center;
+    border: 1.5px solid rgba(232, 213, 184, 0.6);
+    transition: all 0.35s cubic-bezier(.2,.8,.2,1);
+    opacity: 0.55;
+    filter: grayscale(1);
+    backdrop-filter: blur(6px);
+}
+.gift-card:hover { transform: translateY(-4px); }
+.gift-card.unlocked {
+    opacity: 1;
+    filter: none;
+    border-color: #d4a574;
+    background: linear-gradient(135deg, #fff5dc 0%, #ffe8c0 100%);
+    box-shadow:
+        0 8px 22px rgba(212,165,116,0.28),
+        0 2px 4px rgba(0,0,0,0.05),
+        inset 0 1px 0 rgba(255,255,255,0.7);
+    animation: giftGlow 2s ease-in-out infinite;
+}
+@keyframes giftGlow {
+    0%, 100% { box-shadow: 0 8px 22px rgba(212,165,116,0.28), 0 2px 4px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.7); }
+    50% { box-shadow: 0 8px 28px rgba(212,165,116,0.45), 0 2px 4px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.8); }
+}
+.gift-card .gift-emoji {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 8px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(180,140,80,0.15);
+}
+.gift-card .gift-name { font-size: 11px; color: #6b4e2e; line-height: 1.4; font-weight: 600; }
+
+/* ============================================================
+   通关弹窗 —— 高级毛玻璃 + 柔和光晕
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(92, 65, 38, 0.35);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeInOverlay 0.35s ease;
+}
+.modal-overlay.show { display: flex; }
+@keyframes fadeInOverlay {
+    from { opacity: 0; backdrop-filter: blur(0); }
+    to { opacity: 1; backdrop-filter: blur(6px); }
+}
+.modal-box {
+    background: rgba(255, 253, 247, 0.97);
+    backdrop-filter: blur(20px) saturate(1.1);
+    border-radius: 28px;
+    padding: 32px 26px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+    box-shadow:
+        0 30px 80px rgba(92, 65, 38, 0.28),
+        0 4px 12px rgba(0,0,0,0.06);
+    animation: bounceIn 0.55s cubic-bezier(.2,.8,.2,1);
+    border: 1px solid rgba(232, 213, 184, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+/* 弹窗顶部装饰光带 */
+.modal-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #d4a574, transparent);
+    border-radius: 0 0 3px 3px;
+}
+@keyframes bounceIn {
+    0% { transform: scale(0.4); opacity: 0; }
+    65% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+}
+.modal-box .celebrate {
+    width: 128px;
+    height: 128px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid rgba(255, 240, 196, 0.9);
+    animation: dogDance 1.2s ease-in-out infinite;
+    box-shadow:
+        0 8px 24px rgba(212,165,116,0.35),
+        0 2px 6px rgba(0,0,0,0.06),
+        inset 0 0 0 6px rgba(255,255,255,0.8);
+}
+@keyframes dogDance {
+    0%, 100% { transform: rotate(-7deg) translateY(0); }
+    50% { transform: rotate(7deg) translateY(-8px); }
+}
+.modal-box h3 {
+    font-size: 19px;
+    background: linear-gradient(135deg, #8b6b3d, #c48e54);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+.modal-box .gift-clue {
+    background: linear-gradient(135deg, #fff5dc 0%, #ffe8c0 100%);
+    border-radius: 14px;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 14px;
+    color: #7a5a30;
+    line-height: 1.7;
+    border: 1px solid rgba(232, 200, 154, 0.7);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+.modal-box .btn { margin-top: 8px; }
+
+/* ============================================================
+   Toast 提示 —— 高级胶囊样式
+   ============================================================ */
+.toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(92, 65, 38, 0.95);
+    backdrop-filter: blur(12px);
+    color: #fff8e8;
+    padding: 11px 22px;
+    border-radius: 999px;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 8px 24px rgba(92,65,38,0.3);
+    animation: toastIn 0.35s cubic-bezier(.2,.8,.2,1), toastOut 0.35s ease 1.65s forwards;
+    letter-spacing: 0.3px;
+}
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(-50%) translateY(-16px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+@keyframes toastOut {
+    to { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+}
+
+/* 底部按钮区 */
+.action-row { text-align: center; margin-top: 20px; }
+
+/* 重置按钮 —— 幽灵按钮 */
+.reset-btn {
+    display: block;
+    margin: 28px auto 0;
+    background: transparent;
+    color: #a0855c;
+    border: none;
+    font-size: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(232, 213, 184, 0.7);
+    transition: all 0.2s;
+}
+.reset-btn:hover { color: #7a5a30; border-color: #d4a574; background: rgba(255,240,196,0.4); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+    <!-- 顶部标题区 -->
+    <div class="header">
+        <div style="display:flex; justify-content:center; gap:14px; margin-bottom:12px;">
+            <img src="dog_main.jpg" class="dog-img" style="width:58px; height:58px; border-radius:50%; border:3px solid #fff0c4; box-shadow:0 4px 14px rgba(212,165,116,0.28), 0 2px 4px rgba(0,0,0,0.04);">
+            <img src="dog_point.jpg" class="dog-img" style="width:58px; height:58px; border-radius:50%; border:3px solid #ffe8c4; box-shadow:0 4px 14px rgba(212,165,116,0.28), 0 2px 4px rgba(0,0,0,0.04);">
+        </div>
+        <h1>线条小狗双十一寻宝大冒险✨</h1>
+        <div class="sub">🎂 11.11 专属生日惊喜！<br>跟着小狗一步步闯关，解锁每一份线下礼物～</div>
+        <div class="paw-deco">🐾 🐾 🐾</div>
+    </div>
+
+    <!-- 进度条 -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- 游戏主区域：关卡1~6 -->
+    <div id="gameArea"></div>
+
+    <!-- 礼物收藏墙 -->
+    <div class="cloud-card gift-wall">
+        <h2>🎁 礼物收藏墙</h2>
+        <div class="gift-grid" id="giftGrid"></div>
+    </div>
+
+    <button class="reset-btn" onclick="Game.reset()">🔄 重新开始冒险</button>
+</div>
+
+<!-- 通关弹窗容器 -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+        <div class="celebrate">
+            <img class="dog-img" src="dog_main.jpg" alt="庆祝">
+        </div>
+        <h3 id="modalTitle">恭喜通关！</h3>
+        <div class="gift-clue" id="modalClue"></div>
+        <button class="btn btn-primary" id="modalNextBtn">继续闯关 →</button>
+    </div>
+</div>
+
+<!-- 背景音乐 -->
+<audio id="bgMusic" loop preload="auto"></audio>
+
+<script>
+/* ============================================================
+   📝 配置区 —— 所有文案/答案/礼物清单集中在这里，随便改！
+   ============================================================ */
+const CONFIG = {
+    birthday: '11月11日',
+    friendName: '泡泡',
+
+    levels: [
+        {
+            id: 1,
+            type: 'fillBlank',
+            title: '🎂 关卡一：生日填空题',
+            question: '今天是泡泡的 ____ 岁生日，我们从初中 ____ 年相遇，现在认识的第 ____ 年。',
+            blanks: [
+                { answer: '21', label: '年龄' },
+                { answer: '2018', label: '相遇年份' },
+                { answer: '9', label: '认识的年数' }
+            ],
+            reward: '解锁第一件礼物 —— 🐾 线条小狗鼠标垫（线索卡）'
+        },
+        {
+            id: 2,
+            type: 'huntDog',
+            title: '🔍 关卡二：看图寻宝',
+            desc: '藏了 3 只线条小狗在下面，全部点击就能通关！',
+            dogCount: 3,
+            reward: '解锁第二件礼物 —— 🌸 线条小狗车载香薰盲盒（线索卡）'
+        },
+        {
+            id: 3,
+            type: 'choice',
+            title: '💭 关卡三：回忆选择题',
+            question: '我们最近一起度过最开心的小事是？',
+            options: [
+                { text: '一起吃香喷喷湘菜馆', correct: false },
+                { text: '一起吃十二味甜品', correct: true },
+                { text: '一起熬夜聊天', correct: false }
+            ],
+            reward: '解锁第三件礼物 —— 🧢 小狗毛绒帽子（线索卡）'
+        },
+        {
+            id: 4,
+            type: 'catchDog',
+            title: '🏃 关卡四：抓住逃跑的小狗',
+            desc: '10 秒内点击抓到 5 只乱跑的小狗！',
+            duration: 10,
+            targetCount: 5,
+            reward: '解锁第四件礼物 —— 🍚 小狗陶瓷饭碗（线索卡）'
+        },
+        {
+            id: 5,
+            type: 'password',
+            title: '🔐 关卡五：专属口令解锁',
+            question: '我经常叫你 ____ ，你经常叫我 ____ 。',
+            inputs: [
+                { answer: '鱼鱼', label: '我叫你' },
+                { answer: '小茗', label: '你叫我' }
+            ],
+            reward: '解锁第五件礼物 —— 📒 线条小狗笔记本（线索卡）'
+        },
+        {
+            id: 6,
+            type: 'treasure',
+            title: '👑 关卡六：终极宝箱',
+            desc: '前五关全部通关！点击宝箱开启最终大奖 ✨',
+            finalTreasure: [
+                '🎁 折叠礼盒（含线下见面专属包装）',
+                '🍪 零食大礼包（你最爱的都放进去啦）',
+                '🍜 美食线上兑换券（随时兑换你想吃的）'
+            ],
+            finalMessage: '🎉 所有礼物已全部集齐！线下见面一次性把全部礼物打包送给你～ 生日快乐，泡泡！🐶💕'
+        }
+    ]
+};
+
+/* ============================================================
+   🎮 游戏核心对象
+   ============================================================ */
+const Game = {
+    currentLevel: 0,
+    completed: [],
+    storageKey: 'dogAdventureProgress_v1',
+
+    init() {
+        this.loadProgress();
+        this.renderProgress();
+        this.renderGiftWall();
+        this.renderLevels();
+        this.showLevel(this.currentLevel);
+        this.startBgMusic();
+    },
+
+    saveProgress() {
+        localStorage.setItem(this.storageKey, JSON.stringify({
+            currentLevel: this.currentLevel,
+            completed: this.completed
+        }));
+    },
+    loadProgress() {
+        try {
+            let saved = JSON.parse(localStorage.getItem(this.storageKey));
+            if (saved && Array.isArray(saved.completed)) {
+                this.completed = saved.completed;
+                for (let i = 0; i < CONFIG.levels.length; i++) {
+                    if (!this.completed.includes(CONFIG.levels[i].id)) {
+                        this.currentLevel = i;
+                        return;
+                    }
+                }
+                this.currentLevel = CONFIG.levels.length - 1;
+            }
+        } catch (e) { }
+    },
+    reset() {
+        if (!confirm('确定要重新开始整个冒险吗？所有进度会清空哦～')) return;
+        localStorage.removeItem(this.storageKey);
+        this.completed = [];
+        this.currentLevel = 0;
+        this.renderProgress();
+        this.renderGiftWall();
+        this.renderLevels();
+        this.showLevel(0);
+    },
+
+    renderProgress() {
+        let bar = document.getElementById('progressBar');
+        let html = '';
+        for (let i = 0; i < CONFIG.levels.length; i++) {
+            let done = this.completed.includes(CONFIG.levels[i].id);
+            let current = i === this.currentLevel;
+            let cls = done ? 'done' : (current ? 'current' : 'locked');
+            html += `<div class="progress-dot ${cls}">${i + 1}</div>`;
+            if (i < CONFIG.levels.length - 1) {
+                let lineDone = this.completed.includes(CONFIG.levels[i].id) ? 'done' : '';
+                html += `<div class="progress-line ${lineDone}"></div>`;
+            }
+        }
+        bar.innerHTML = html;
+    },
+
+    renderGiftWall() {
+        let grid = document.getElementById('giftGrid');
+        const giftLevels = CONFIG.levels.slice(0, 5);
+        let html = '';
+        giftLevels.forEach((lv, i) => {
+            let unlocked = this.completed.includes(lv.id) ? 'unlocked' : '';
+            html += `<div class="gift-card ${unlocked}">
+                <div class="gift-emoji">
+                    <img class="dog-img" src="dog_main.jpg" alt="礼物${i+1}">
+                </div>
+                <div class="gift-name">礼物 ${i+1}</div>
+            </div>`;
+        });
+        grid.innerHTML = html;
+    },
+
+    renderLevels() {
+        let area = document.getElementById('gameArea');
+        let html = '';
+        CONFIG.levels.forEach((lv, idx) => {
+            let prevDone = idx === 0 || this.completed.includes(CONFIG.levels[idx - 1].id);
+            let locked = !prevDone;
+            html += `<div class="cloud-card level-card" id="level-${idx}">`;
+            if (locked) {
+                html += `<div style="text-align:center; padding:20px; color:#b9a88a;">🔒 请先通关上一关～</div>`;
+            } else {
+                html += `<div class="level-title"><span class="level-num">关卡${lv.id}</span>${lv.title.replace(/^[^\s]+\s/, '')}</div>`;
+                html += this.renderLevelContent(lv, idx);
+            }
+            html += `</div>`;
+        });
+        area.innerHTML = html;
+    },
+
+    renderLevelContent(lv, idx) {
+        switch (lv.type) {
+            case 'fillBlank':   return this.html_fillBlank(lv, idx);
+            case 'huntDog':     return this.html_huntDog(lv, idx);
+            case 'choice':      return this.html_choice(lv, idx);
+            case 'catchDog':    return this.html_catchDog(lv, idx);
+            case 'password':    return this.html_password(lv, idx);
+            case 'treasure':    return this.html_treasure(lv, idx);
+            default: return '';
+        }
+    },
+
+    html_fillBlank(lv, idx) {
+        let question = lv.question;
+        let blankIdx = 0;
+        question = question.replace(/____/g, () => {
+            let b = lv.blanks[blankIdx];
+            return `<input class="input" data-blank="${blankIdx}" placeholder="${b.label}">`;
+        });
+        return `<div class="fill-blank"><p>${question}</p><div class="action-row">
+            <button class="btn btn-primary" onclick="LevelHandlers.fillBlank(${idx})">✨ 提交答案</button></div></div>`;
+    },
+
+    html_huntDog(lv, idx) {
+        let deco = ['🌿', '🌼', '☁️', '🌱', '🍂', '🌸', '🌻', '🍃', '🪷', '✨'];
+        const positions = [
+            { top: '18%', left: '22%' },
+            { top: '45%', left: '60%' },
+            { top: '70%', left: '35%' }
+        ];
+        let html = `<div class="hunt-area" id="huntArea${idx}">`;
+        lv.dogCount = Math.min(lv.dogCount, positions.length);
+        for (let i = 0; i < lv.dogCount; i++) {
+            let p = positions[i];
+            html += `<div class="hunt-dog" data-dog="${i}"
+                style="top:${p.top}; left:${p.left};"
+                onclick="LevelHandlers.huntDog(${idx}, this)">
+                <img class="dog-img" src="dog_hunt.jpg" alt="小狗">
+            </div>`;
+        }
+        for (let i = 0; i < 10; i++) {
+            let t = Math.floor(Math.random() * 80 + 5);
+            let l = Math.floor(Math.random() * 85 + 5);
+            let sz = Math.floor(Math.random() * 18 + 24);
+            html += `<div class="hunt-deco" style="position:absolute; top:${t}%; left:${l}%; font-size:${sz}px; opacity:0.6; pointer-events:none; user-select:none;">${deco[i % deco.length]}</div>`;
+        }
+        html += `</div>`;
+        html += `<div class="hunt-progress">已找到 <span id="huntFound${idx}" style="color:#c48e54; font-weight:700;">0</span> / ${lv.dogCount} 只小狗 🐾</div>`;
+        return html;
+    },
+
+    html_choice(lv, idx) {
+        let html = `<p style="text-align:center; margin-bottom:18px; font-size:15px; color:#5c4126; font-weight:600;">${lv.question}</p>`;
+        lv.options.forEach((opt, i) => {
+            html += `<button class="choice-item" onclick="LevelHandlers.choice(${idx}, ${i}, this)">
+                ${String.fromCharCode(65 + i)}. ${opt.text}
+            </button>`;
+        });
+        return html;
+    },
+
+    html_catchDog(lv, idx) {
+        return `<div class="catch-info">
+            ⏱️ 剩余时间：<span class="num" id="catchTime${idx}">${lv.duration}</span>s &nbsp;|&nbsp;
+            🐶 抓到：<span class="num" id="catchGot${idx}">0</span> / ${lv.targetCount}
+        </div>
+        <div class="catch-area" id="catchArea${idx}">
+            <div class="catch-dog" id="catchDog${idx}" onclick="LevelHandlers.catchDogHit(${idx}, this)">
+                <img class="dog-img" src="dog_catch.jpeg" alt="逃跑的小狗">
+            </div>
+        </div>
+        <div class="action-row">
+            <button class="btn" onclick="LevelHandlers.catchDogStart(${idx})">🎯 开始游戏</button>
+        </div>`;
+    },
+
+    html_password(lv, idx) {
+        let html = `<div class="password-box"><div class="hint">💡 还记得你们的专属暗号吗？<br>两个空都填对才能解锁哦～</div>`;
+        html += `<div style="font-size:15px; text-align:center; margin-bottom:14px; line-height:2.4; color:#5c4126;">${lv.question}</div>`;
+        lv.inputs.forEach((inp, i) => {
+            html += `<div class="input-row"><input class="input" data-pw="${i}" placeholder="${inp.label}"></div>`;
+        });
+        html += `<div class="action-row"><button class="btn btn-primary" onclick="LevelHandlers.password(${idx})">🔓 解锁</button></div></div>`;
+        return html;
+    },
+
+    html_treasure(lv, idx) {
+        return `<div class="treasure-box">
+            <p style="font-size:15px; margin-bottom:14px; color:#5c4126;">${lv.desc}</p>
+            <div class="chest" id="chest${idx}" onclick="LevelHandlers.openChest(${idx})">
+                <img class="dog-img" src="dog_heart.jpg" alt="点我开启宝箱">
+            </div>
+            <div class="treasure-reveal" id="treasureReveal${idx}">
+                <h3 style="color:#c48e54; font-size:18px; margin:16px 0; font-weight:800; letter-spacing:1px;">🌟 恭喜！终极宝箱已开启 🌟</h3>
+                <div class="treasure-list">
+                    ${lv.finalTreasure.map(t => `<div class="item">${t}</div>`).join('')}
+                </div>
+                <p style="margin-top:20px; font-size:14px; line-height:1.9; color:#7a5a30; font-weight:600;">${lv.finalMessage}</p>
+                <div style="margin-top:18px; display:flex; justify-content:center; gap:20px;">
+                    <img src="dog_main.jpg" class="dog-img" style="width:74px; height:74px; border-radius:50%; border:3px solid #fff0c4; box-shadow:0 4px 14px rgba(212,165,116,0.28);">
+                    <img src="dog_heart.jpg" class="dog-img" style="width:74px; height:74px; border-radius:50%; border:3px solid #ffe8c4; box-shadow:0 4px 14px rgba(212,165,116,0.28);">
+                </div>
+            </div>
+        </div>`;
+    },
+
+    showLevel(idx) {
+        let cards = document.querySelectorAll('.level-card');
+        cards.forEach(c => c.classList.remove('active'));
+        let target = document.getElementById('level-' + idx);
+        if (target) target.classList.add('active');
+        this.currentLevel = idx;
+        this.renderProgress();
+    },
+
+    completeLevel(idx) {
+        let lv = CONFIG.levels[idx];
+        if (this.completed.includes(lv.id)) return;
+        this.completed.push(lv.id);
+        this.saveProgress();
+        this.renderProgress();
+        this.renderGiftWall();
+        this.showModal(lv);
+    },
+
+    showModal(lv) {
+        let modal = document.getElementById('modalOverlay');
+        let title = document.getElementById('modalTitle');
+        let clue = document.getElementById('modalClue');
+        let nextBtn = document.getElementById('modalNextBtn');
+        if (lv.type === 'treasure') {
+            title.textContent = '🎉 全部通关！生日快乐泡泡！';
+            clue.innerHTML = `✨ 终极宝箱开启！<br>所有礼物已全部集齐～`;
+            nextBtn.textContent = '🎀 冒险圆满完成';
+            nextBtn.onclick = () => { modal.classList.remove('show'); toast('🐶 冒险结束！期待线下见面💕'); };
+        } else {
+            title.textContent = '✨ 恭喜通关！';
+            clue.innerHTML = lv.reward;
+            let nextIdx = this.currentLevel + 1;
+            if (nextIdx < CONFIG.levels.length) {
+                nextBtn.textContent = '继续闯关 →';
+                nextBtn.onclick = () => { modal.classList.remove('show'); this.renderLevels(); this.showLevel(nextIdx); };
+            } else {
+                nextBtn.textContent = '查看终极宝箱 🎁';
+                nextBtn.onclick = () => { modal.classList.remove('show'); this.renderLevels(); this.showLevel(nextIdx); };
+            }
+        }
+        modal.classList.add('show');
+    },
+
+    startBgMusic() {
+        try {
+            let AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            let ctx = new AudioCtx();
+            let gain = ctx.createGain();
+            gain.gain.value = 0.06;
+            gain.connect(ctx.destination);
+            const melody = [
+                [261.63, 0.0,  0.5], [261.63, 0.5,  0.5], [293.66, 1.0,  0.5],
+                [261.63, 1.5,  0.5], [349.23, 2.0,  0.5], [329.63, 2.5,  1.0],
+                [261.63, 3.5,  0.5], [261.63, 4.0,  0.5], [293.66, 4.5,  0.5],
+                [261.63, 5.0,  0.5], [392.00, 5.5,  0.5], [349.23, 6.0,  1.0],
+            ];
+            let startAt = ctx.currentTime + 0.3;
+            melody.forEach(([freq, offset, dur]) => {
+                let osc = ctx.createOscillator();
+                let g = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                g.gain.setValueAtTime(0, startAt + offset);
+                g.gain.linearRampToValueAtTime(0.06, startAt + offset + 0.05);
+                g.gain.linearRampToValueAtTime(0, startAt + offset + dur);
+                osc.connect(g); g.connect(gain);
+                osc.start(startAt + offset); osc.stop(startAt + offset + dur + 0.1);
+            });
+        } catch (e) { }
+    }
+};
+
+function toast(msg) {
+    let t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+}
+
+/* ============================================================
+   🎯 各关卡交互处理
+   ============================================================ */
+const LevelHandlers = {
+    fillBlank(idx) {
+        let lv = CONFIG.levels[idx];
+        let inputs = document.querySelectorAll('#level-' + idx + ' [data-blank]');
+        let allRight = true;
+        inputs.forEach((inp, i) => {
+            if (inp.value.trim() === lv.blanks[i].answer) { inp.style.borderColor = '#9ac97a'; inp.style.background = '#f5fbea'; }
+            else { inp.style.borderColor = '#e89a9a'; inp.style.background = '#fde8e8'; allRight = false; }
+        });
+        if (allRight) { toast('🥳 太棒了！答案全对～'); setTimeout(() => Game.completeLevel(idx), 500); }
+        else toast('🤔 好像有几个空还不对哦，再想想～');
+    },
+
+    huntDog(idx, el) {
+        if (el.classList.contains('found')) return;
+        el.classList.add('found');
+        let found = document.querySelectorAll('#huntArea' + idx + ' .hunt-dog.found').length;
+        let total = CONFIG.levels[idx].dogCount;
+        document.getElementById('huntFound' + idx).textContent = found;
+        if (found >= total) { toast('🎉 全部找到！眼力太棒了～'); setTimeout(() => Game.completeLevel(idx), 600); }
+    },
+
+    choice(idx, optIdx, btn) {
+        let lv = CONFIG.levels[idx];
+        let opt = lv.options[optIdx];
+        let allBtns = document.querySelectorAll('#level-' + idx + ' .choice-item');
+        allBtns.forEach(b => b.style.pointerEvents = 'none');
+        if (opt.correct) { btn.classList.add('correct'); toast('🎊 答对啦！果然是你们～'); setTimeout(() => Game.completeLevel(idx), 800); }
+        else {
+            btn.classList.add('wrong');
+            allBtns.forEach((b, i) => { if (lv.options[i].correct) b.classList.add('correct'); });
+            toast('😢 不是这个哦，再想想～（已标出正确答案）');
+            setTimeout(() => {
+                allBtns.forEach(b => { b.classList.remove('correct', 'wrong'); b.style.pointerEvents = 'auto'; });
+            }, 1800);
+        }
+    },
+
+    catchDogStart(idx) {
+        let lv = CONFIG.levels[idx];
+        let got = 0, timeLeft = lv.duration;
+        document.getElementById('catchGot' + idx).textContent = got;
+        document.getElementById('catchTime' + idx).textContent = timeLeft;
+        document.querySelector('#level-' + idx + ' .action-row').style.display = 'none';
+
+        let timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('catchTime' + idx).textContent = timeLeft;
+            if (timeLeft <= 0) {
+                clearInterval(timer); clearInterval(moveTimer);
+                if (got >= lv.targetCount) { toast('🐶 抓到啦！神准！'); setTimeout(() => Game.completeLevel(idx), 500); }
+                else { toast('⏰ 时间到！这次抓到 ' + got + ' 只，再来一次～');
+                    document.querySelector('#level-' + idx + ' .action-row').style.display = 'block'; }
+            }
+        }, 1000);
+
+        let dog = document.getElementById('catchDog' + idx);
+        let area = document.getElementById('catchArea' + idx);
+        let moveTimer = setInterval(() => {
+            let areaW = area.clientWidth - 60, areaH = area.clientHeight - 60;
+            dog.style.left = Math.floor(Math.random() * areaW) + 'px';
+            dog.style.top = Math.floor(Math.random() * areaH) + 'px';
+        }, 800);
+
+        LevelHandlers._catchTimers = LevelHandlers._catchTimers || {};
+        LevelHandlers._catchTimers[idx] = { timer, moveTimer };
+    },
+
+    catchDogHit(idx, dog) {
+        if (!LevelHandlers._catchTimers || !LevelHandlers._catchTimers[idx]) { toast('👉 先点「开始游戏」哦～'); return; }
+        let info = document.getElementById('catchGot' + idx);
+        let got = parseInt(info.textContent) + 1;
+        info.textContent = got;
+        let area = document.getElementById('catchArea' + idx);
+        let areaW = area.clientWidth - 60, areaH = area.clientHeight - 60;
+        dog.style.left = Math.floor(Math.random() * areaW) + 'px';
+        dog.style.top = Math.floor(Math.random() * areaH) + 'px';
+        dog.style.transform = 'scale(1.3)';
+        setTimeout(() => dog.style.transform = '', 120);
+        let lv = CONFIG.levels[idx];
+        if (got >= lv.targetCount) {
+            let t = LevelHandlers._catchTimers[idx];
+            clearInterval(t.timer); clearInterval(t.moveTimer);
+            LevelHandlers._catchTimers[idx] = null;
+            toast('🎉 抓够啦！狗狗插翅难飞～'); setTimeout(() => Game.completeLevel(idx), 600);
+        }
+    },
+
+    password(idx) {
+        let lv = CONFIG.levels[idx];
+        let inputs = document.querySelectorAll('#level-' + idx + ' [data-pw]');
+        let allRight = true;
+        inputs.forEach((inp, i) => {
+            if (inp.value.trim() === lv.inputs[i].answer) inp.style.borderColor = '#9ac97a';
+            else { inp.style.borderColor = '#e89a9a'; allRight = false; }
+        });
+        if (allRight) { toast('🎀 对啦！暗号确认成功～'); setTimeout(() => Game.completeLevel(idx), 600); }
+        else toast('🤫 暗号好像不对哦，再回忆一下～');
+    },
+
+    openChest(idx) {
+        let chest = document.getElementById('chest' + idx);
+        let reveal = document.getElementById('treasureReveal' + idx);
+        chest.classList.add('opening');
+        setTimeout(() => {
+            chest.style.display = 'none';
+            reveal.classList.add('show');
+            Game.completeLevel(idx);
+        }, 700);
+    }
+};
+
+/* 🚀 启动 */
+document.addEventListener('click', function once() { Game.init(); document.removeEventListener('click', once); }, { once: true });
+window.addEventListener('load', function () { try { Game.init(); } catch (e) { } });
+</script>
+</body>
+</html>
